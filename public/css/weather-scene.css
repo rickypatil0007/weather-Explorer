@@ -1,0 +1,257 @@
+/**
+ * weather-scene.css
+ * CSS-first environment system for Weather Explorer
+ */
+
+:root {
+    --scene-transition-speed: 1s;
+    --wind-intensity: 0;
+    --precip-intensity: 0;
+}
+
+#weather-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Behind everything */
+    overflow: hidden;
+    transition: background-color var(--scene-transition-speed) ease,
+                background-image var(--scene-transition-speed) ease;
+    background-color: #87CEEB; /* default clear day */
+}
+
+/* -----------------------------
+   LAYERS 
+------------------------------ */
+#weather-scene > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity var(--scene-transition-speed) ease;
+    pointer-events: none;
+}
+
+/* -----------------------------
+   PHASES (Day / Night / Dawn / Sunset)
+------------------------------ */
+.phase--day {
+    background: linear-gradient(to bottom, #4ca1af, #c4e0e5);
+}
+.phase--night {
+    background: linear-gradient(to bottom, #001f3f, #080d1a);
+}
+.phase--dawn {
+    background: linear-gradient(to bottom, #2b4162, #fa9c7a);
+}
+.phase--sunset {
+    background: linear-gradient(to bottom, #ff7e5f, #feb47b);
+}
+
+/* -----------------------------
+   SUN & MOON
+------------------------------ */
+.scene-sun, .scene-moon {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    position: absolute;
+    top: 15%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 100px 20px rgba(255, 255, 255, 0.4);
+}
+
+.scene-sun {
+    background: radial-gradient(circle, #fffdf2 0%, #ffdf00 100%);
+    box-shadow: 0 0 120px 40px rgba(255, 223, 0, 0.5);
+}
+
+.scene-moon {
+    background: radial-gradient(circle, #f0f0f0 0%, #d0d0d0 100%);
+    box-shadow: 0 0 80px 20px rgba(255, 255, 255, 0.2);
+}
+
+.phase--day .scene-sun,
+.phase--dawn .scene-sun,
+.phase--sunset .scene-sun {
+    opacity: 1;
+}
+
+.phase--night .scene-moon {
+    opacity: 1;
+}
+
+/* -----------------------------
+   STARS
+------------------------------ */
+.scene-stars {
+    background-image: 
+        radial-gradient(1px 1px at 10% 20%, white, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 30% 50%, rgba(255,255,255,0.8), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 70% 30%, white, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 50% 90%, white, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 20% 70%, rgba(255,255,255,0.9), rgba(0,0,0,0));
+    background-size: 200px 200px;
+    animation: twinkle 5s infinite alternate;
+}
+
+.phase--night .scene-stars {
+    opacity: 1;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.6; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* -----------------------------
+   CLOUDS
+------------------------------ */
+.scene-clouds {
+    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150"><path fill="%23ffffff" fill-opacity="0.8" d="M120 70c0-16.6 13.4-30 30-30s30 13.4 30 30c11 0 20 9 20 20s-9 20-20 20H120c-16.6 0-30-13.4-30-30s13.4-30 30-30z"/></svg>') repeat-x;
+    background-size: 400px auto;
+    background-position: 0 10%;
+    animation: drift 60s linear infinite;
+    filter: blur(8px);
+}
+
+.scene--partly-cloudy .scene-clouds { opacity: 0.5; }
+.scene--mainly-clear .scene-clouds { opacity: 0.2; }
+.scene--overcast .scene-clouds { opacity: 0.9; background-size: 600px auto; filter: blur(4px) brightness(0.6); }
+
+/* Storm and heavy rain make clouds dark */
+.scene--thunderstorm .scene-clouds,
+.scene--rain.intensity--heavy .scene-clouds,
+.scene--rain-showers.intensity--extreme .scene-clouds {
+    opacity: 1;
+    filter: blur(10px) brightness(0.3);
+}
+
+@keyframes drift {
+    from { background-position: 0 10%; }
+    to { background-position: -100vw 10%; }
+}
+
+/* Adjust cloud speed based on wind */
+.wind--moderate .scene-clouds { animation-duration: 40s; }
+.wind--strong .scene-clouds { animation-duration: 20s; }
+.wind--very-strong .scene-clouds { animation-duration: 10s; }
+
+/* -----------------------------
+   FOG
+------------------------------ */
+.scene-fog {
+    background: linear-gradient(to top, rgba(255,255,255,0.7), transparent);
+    animation: fogDrift 30s infinite alternate;
+}
+
+.scene--fog .scene-fog { opacity: 1; }
+.phase--night.scene--fog .scene-fog { background: linear-gradient(to top, rgba(150,160,180,0.5), transparent); }
+
+@keyframes fogDrift {
+    0% { transform: translateY(10%) scale(1.1); }
+    100% { transform: translateY(-5%) scale(1.2); }
+}
+
+/* -----------------------------
+   RAIN
+------------------------------ */
+.scene-rain {
+    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="200"><line x1="10" y1="0" x2="10" y2="40" stroke="%23ffffff" stroke-width="1.5" stroke-opacity="0.6"/></svg>') repeat;
+    background-size: 30px 150px;
+    animation: rainFall 0.8s linear infinite;
+}
+
+.scene--drizzle .scene-rain { opacity: 0.4; animation-duration: 1.2s; background-size: 40px 120px; }
+.scene--rain .scene-rain { opacity: 0.7; }
+.scene--rain-showers .scene-rain { opacity: 0.9; animation: rainFall 0.7s linear infinite, showerPulse 5s infinite; }
+.scene--freezing-rain .scene-rain { opacity: 0.6; filter: drop-shadow(0 0 2px #aee); }
+.scene--thunderstorm .scene-rain { opacity: 0.9; animation-duration: 0.5s; }
+
+/* Wind affects rain angle */
+.wind--calm .scene-rain { animation-name: rainFallCalm; }
+.wind--moderate .scene-rain { transform: skewX(-15deg); }
+.wind--strong .scene-rain { transform: skewX(-30deg); animation-duration: 0.4s; }
+
+@keyframes rainFall {
+    from { background-position: 0 0; }
+    to { background-position: 0 300px; }
+}
+@keyframes rainFallCalm {
+    from { background-position: 0 0; }
+    to { background-position: 0 300px; }
+}
+@keyframes showerPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.9; }
+}
+
+/* -----------------------------
+   SNOW
+------------------------------ */
+.scene-snow {
+    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><circle cx="25" cy="25" r="3" fill="%23ffffff" fill-opacity="0.8"/></svg>') repeat;
+    background-size: 100px 100px;
+    animation: snowFall 5s linear infinite;
+}
+
+.scene-snow::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="15" cy="15" r="1.5" fill="%23ffffff" fill-opacity="0.6"/></svg>') repeat;
+    background-size: 60px 60px;
+    animation: snowFall 3s linear infinite reverse;
+}
+
+.scene--snow .scene-snow { opacity: 1; }
+.scene--snow-showers .scene-snow { opacity: 1; animation: snowFall 4s linear infinite, showerPulse 6s infinite; }
+.scene--snow-grains .scene-snow { opacity: 0.7; background-size: 30px 30px; animation-duration: 2s; }
+
+/* Wind affects snow */
+.wind--moderate .scene-snow { transform: skewX(-20deg); }
+.wind--strong .scene-snow { transform: skewX(-40deg); animation-duration: 2s; }
+
+@keyframes snowFall {
+    from { background-position: 0 0; }
+    to { background-position: 100px 300px; }
+}
+
+/* -----------------------------
+   THUNDERSTORM / LIGHTNING
+------------------------------ */
+.scene-lightning {
+    background-color: white;
+    opacity: 0;
+}
+
+.scene--thunderstorm .scene-lightning,
+.scene--hail .scene-lightning {
+    animation: flash 15s infinite;
+}
+
+@keyframes flash {
+    0%, 95%, 98%, 100% { opacity: 0; }
+    96%, 99% { opacity: 0.4; }
+}
+
+/* -----------------------------
+   REDUCED MOTION
+------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+    #weather-scene *,
+    #weather-scene {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .scene-rain, .scene-snow, .scene-lightning {
+        opacity: 0 !important;
+    }
+}

@@ -52,6 +52,9 @@ const WeatherController = {
             // Notify map
             emit('userLocationLoaded', { lat, lon });
             
+            // Update Scene
+            if (window.WeatherScene) window.WeatherScene.updateScene();
+            
         } catch (error) {
             console.error("User Location Error:", error);
             State.userLocation.status = 'error';
@@ -101,6 +104,9 @@ const WeatherController = {
             
             // Notify map to drop pin
             emit('selectedLocationLoaded', { lat, lon, name: locName });
+            
+            // Update Scene
+            if (window.WeatherScene) window.WeatherScene.updateScene();
             
         } catch (error) {
             console.error("Selected Location Error:", error);

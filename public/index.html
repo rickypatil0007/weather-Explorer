@@ -16,17 +16,22 @@
     <!-- App CSS -->
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/weather-scene.css">
 </head>
 <body class="apple-glass-theme">
     <!-- Dynamic Full-Page Weather Background -->
-    <div id="weather-scene" class="bg-day-clear">
-        <div class="scene-stars"></div>
-        <div class="scene-moon"></div>
+    <div id="weather-scene" class="scene--neutral phase--day">
+        <div class="scene-sky"></div>
         <div class="scene-sun"></div>
-        <div class="scene-cloud layer-1"></div>
-        <div class="scene-cloud layer-2"></div>
+        <div class="scene-moon"></div>
+        <div class="scene-stars"></div>
+        <div class="scene-clouds"></div>
+        <div class="scene-fog"></div>
         <div class="scene-rain"></div>
         <div class="scene-snow"></div>
+        <div class="scene-wind"></div>
+        <div class="scene-lightning"></div>
+        <div class="scene-haze"></div>
     </div>
 
     <header class="top-nav">
@@ -42,6 +47,13 @@
             </div>
 
             <div class="nav-controls">
+                <div class="scene-control" style="display: flex; align-items: center; gap: 8px; margin-right: 16px;">
+                    <label for="scene-toggle" style="font-size: 0.85rem; font-weight: 500;">Scene:</label>
+                    <select id="scene-toggle" style="padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: inherit;">
+                        <option value="user">Your Location</option>
+                        <option value="selected">Selected Location</option>
+                    </select>
+                </div>
                 <button id="btn-my-location" class="btn btn-secondary">
                     <span class="icon">📍</span> Use My Location
                 </button>
@@ -219,6 +231,7 @@
     <!-- App Scripts -->
     <script src="/js/state.js"></script>
     <script src="/js/api.js"></script>
+    <script src="/js/weatherScene.js"></script>
     <script src="/js/ui.js"></script>
     <script src="/js/weather.js"></script>
     <script src="/js/map.js"></script>

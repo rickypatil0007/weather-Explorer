@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Init UI (Theme, Event Listeners)
     UI.initTheme();
 
+    // Init Weather Scene Engine
+    if (window.WeatherScene) {
+        window.WeatherScene.init();
+    }
+
     // 2. Init Map
     MapController.init();
 

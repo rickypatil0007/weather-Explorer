@@ -94,6 +94,7 @@ function normalizeWeatherData(data) {
             condition: currentCode.text,
             icon: currentCode.icon,
             isDay: data.current.is_day === 1,
+            weatherCode: data.current.weather_code,
             uvIndex: data.daily.uv_index_max && data.daily.uv_index_max.length > 0 ? data.daily.uv_index_max[0] : 0
         },
         sunrise: data.daily.sunrise[0],

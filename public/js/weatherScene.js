@@ -121,16 +121,16 @@ const WeatherScene = (function() {
             return;
         }
 
-        const code = targetData.current.weather_code;
-        const windSpeed = targetData.current.wind_speed_10m;
+        const code = targetData.current.weatherCode;
+        const windSpeed = targetData.current.windSpeed;
         const precipitation = targetData.current.precipitation || 0; // if provided
         
         // attach current time info for phase
         const weatherContext = {
-            is_day: targetData.current.is_day,
+            is_day: targetData.current.isDay ? 1 : 0,
             currentTime: targetData.current.time,
-            sunrise: targetData.daily?.sunrise?.[0],
-            sunset: targetData.daily?.sunset?.[0]
+            sunrise: targetData.sunrise,
+            sunset: targetData.sunset
         };
 
         const mapping = weatherMapping[code] || { type: 'neutral', intensity: 'none' };

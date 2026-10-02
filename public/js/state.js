@@ -35,3 +35,7 @@ function emit(eventName, data) {
         events[eventName].forEach(cb => cb(data));
     }
 }
+
+window.State = State;
+window.on = on;
+window.emit = emit;

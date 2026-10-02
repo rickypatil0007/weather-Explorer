@@ -56,15 +56,6 @@ const WeatherScene = (function() {
             console.error("Weather scene container not found!");
             return;
         }
-        
-        // Listen for scene control changes
-        const sceneToggle = document.getElementById('scene-toggle');
-        if (sceneToggle) {
-            sceneToggle.addEventListener('change', (e) => {
-                activeSceneLocation = e.target.value; // 'user' or 'selected'
-                updateScene();
-            });
-        }
     }
 
     // Resolves time of day based on is_day flag, and sunrise/sunset times
@@ -174,10 +165,6 @@ const WeatherScene = (function() {
         updateScene,
         setActiveLocation: (loc) => {
             activeSceneLocation = loc;
-            const toggle = document.getElementById('scene-toggle');
-            if (toggle) {
-                toggle.value = loc;
-            }
             updateScene();
         },
         getActiveLocation: () => activeSceneLocation

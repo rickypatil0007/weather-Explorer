@@ -1,0 +1,144 @@
+/* ==========================================================================
+   CSS Variables & Theming (Light/Dark Mode)
+   ========================================================================== */
+   :root {
+    /* Apple Weather Glassmorphism Theme */
+    --bg-color: transparent;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.75);
+    --glass-bg: rgba(0, 0, 0, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    
+    --primary-color: #3b82f6;
+    --primary-hover: #60a5fa;
+    --danger-color: #ef4444;
+    
+    --border-color: rgba(255, 255, 255, 0.15);
+    --table-stripe: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   Base Styles & Reset
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   Layout Grid
+   ========================================================================== */
+.dashboard-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+            "map map"
+            "weather comp"
+            "forecast forecast";
+    }
+    
+    .map-section { grid-area: map; }
+    .weather-section { grid-area: weather; }
+    .comparison-section { grid-area: comp; }
+    .forecast-section { grid-area: forecast; }
+}
+
+.weather-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .weather-section {
+        flex-direction: row;
+    }
+    .weather-card {
+        flex: 1;
+    }
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+.top-nav {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Search */
+.search-container {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    box-shadow: var(--card-shadow);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.nav-controls {
+    display: flex;
+    gap: 0.5rem;
+}

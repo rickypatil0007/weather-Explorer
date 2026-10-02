@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Explorer</title>
+    
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- App CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body class="apple-glass-theme">
+    <!-- Dynamic Full-Page Weather Background -->
+    <div id="weather-scene" class="bg-day-clear">
+        <div class="scene-stars"></div>
+        <div class="scene-moon"></div>
+        <div class="scene-sun"></div>
+        <div class="scene-cloud layer-1"></div>
+        <div class="scene-cloud layer-2"></div>
+        <div class="scene-rain"></div>
+        <div class="scene-snow"></div>
+    </div>
+
+    <header class="top-nav">
+        <div class="nav-content">
+            <h1 class="logo">⛅ Weather Explorer</h1>
+            
+            <div class="search-container">
+                <form id="search-form" class="search-form">
+                    <input type="text" id="search-input" placeholder="Search city or location..." aria-label="Search city" required>
+                    <button type="submit" id="search-btn" class="btn btn-primary" aria-label="Search">Search</button>
+                </form>
+                <div id="search-results" class="search-dropdown hidden"></div>
+            </div>
+
+            <div class="nav-controls">
+                <button id="btn-my-location" class="btn btn-secondary">
+                    <span class="icon">📍</span> Use My Location
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-layout">
+        
+        <!-- Interactive Map Section -->
+        <section class="map-section glass-panel">
+            <header class="section-header">
+                <h2>Interactive Map</h2>
+                <p class="subtitle">Click anywhere to drop a pin and check the weather.</p>
+            </header>
+            <div id="map-container" class="map-container" aria-label="Interactive global map"></div>
+        </section>
+
+        <!-- Weather Cards Section -->
+        <section class="weather-section">
+            
+            <!-- Location 1: Your Location -->
+            <article id="card-user" class="weather-card glass-panel empty-state">
+                <div class="card-loading hidden">
+                    <div class="spinner"></div>
+                    <p>Detecting location...</p>
+                </div>
+                <div class="card-error hidden">
+                    <p>Location access denied. Use the map or search.</p>
+                </div>
+                <div class="card-content hidden">
+                    <header class="card-header">
+                        <span class="badge blue-badge">Your Location</span>
+                        <h3 id="user-location-name">--</h3>
+                        <p id="user-location-time" class="time-text">--</p>
+                    </header>
+                    <div class="main-weather">
+                        <div class="temp-block">
+                            <span id="user-temp" class="large-temp">--</span><span class="unit">°C</span>
+                        </div>
+                        <div class="condition-block">
+                            <span id="user-icon" class="weather-emoji">--</span>
+                            <span id="user-condition">--</span>
+                        </div>
+                    </div>
+                    <div class="weather-stats">
+                        <div class="stat"><span class="label">Feels Like</span> <span id="user-feels" class="val">--</span></div>
+                        <div class="stat"><span class="label">Humidity</span> <span id="user-humidity" class="val">--</span></div>
+                        <div class="stat"><span class="label">Wind</span> <span id="user-wind" class="val">--</span></div>
+                        <div class="stat"><span class="label">UV Index</span> <span id="user-uv" class="val">--</span></div>
+                        <div class="stat"><span class="label">Air Quality</span> <span id="user-aqi" class="val">--</span></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Location 2: Selected Location -->
+            <article id="card-selected" class="weather-card glass-panel empty-state">
+                <div class="card-loading hidden">
+                    <div class="spinner"></div>
+                    <p>Fetching weather...</p>
+                </div>
+                <div class="card-content hidden">
+                    <header class="card-header">
+                        <span class="badge red-badge">Selected Location</span>
+                        <h3 id="sel-location-name">--</h3>
+                        <p id="sel-location-time" class="time-text">--</p>
+                    </header>
+                    <div class="main-weather">
+                        <div class="temp-block">
+                            <span id="sel-temp" class="large-temp">--</span><span class="unit">°C</span>
+                        </div>
+                        <div class="condition-block">
+                            <span id="sel-icon" class="weather-emoji">--</span>
+                            <span id="sel-condition">--</span>
+                        </div>
+                    </div>
+                    <div class="weather-stats">
+                        <div class="stat"><span class="label">Feels Like</span> <span id="sel-feels" class="val">--</span></div>
+                        <div class="stat"><span class="label">Humidity</span> <span id="sel-humidity" class="val">--</span></div>
+                        <div class="stat"><span class="label">Wind</span> <span id="sel-wind" class="val">--</span></div>
+                        <div class="stat"><span class="label">UV Index</span> <span id="sel-uv" class="val">--</span></div>
+                        <div class="stat"><span class="label">Air Quality</span> <span id="sel-aqi" class="val">--</span></div>
+                    </div>
+                </div>
+                <div class="empty-placeholder">
+                    <span class="icon">📍</span>
+                    <p>Select a location on the map</p>
+                </div>
+            </article>
+        </section>
+
+        <!-- Comparison Table Section -->
+        <section class="comparison-section glass-panel">
+            <header class="section-header">
+                <h2>Weather Comparison</h2>
+            </header>
+            <div class="table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th><span class="dot blue-dot"></span> Your Location</th>
+                            <th><span class="dot red-dot"></span> Selected Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Temperature</td>
+                            <td id="comp-temp-user">--</td>
+                            <td id="comp-temp-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Feels Like</td>
+                            <td id="comp-feels-user">--</td>
+                            <td id="comp-feels-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Humidity</td>
+                            <td id="comp-hum-user">--</td>
+                            <td id="comp-hum-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Wind Speed</td>
+                            <td id="comp-wind-user">--</td>
+                            <td id="comp-wind-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Pressure</td>
+                            <td id="comp-pres-user">--</td>
+                            <td id="comp-pres-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Visibility</td>
+                            <td id="comp-vis-user">--</td>
+                            <td id="comp-vis-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>UV Index</td>
+                            <td id="comp-uv-user">--</td>
+                            <td id="comp-uv-sel">--</td>
+                        </tr>
+                        <tr>
+                            <td>Air Quality (AQI)</td>
+                            <td id="comp-aqi-user">--</td>
+                            <td id="comp-aqi-sel">--</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Forecast Section -->
+        <section class="forecast-section">
+            <div class="forecast-block glass-panel">
+                <h3>Your Location Forecast</h3>
+                <div id="user-forecast-container" class="forecast-grid">
+                    <!-- Forecast items injected via JS -->
+                    <p class="empty-text">Location not available</p>
+                </div>
+            </div>
+            <div class="forecast-block glass-panel">
+                <h3>Selected Location Forecast</h3>
+                <div id="sel-forecast-container" class="forecast-grid">
+                    <!-- Forecast items injected via JS -->
+                    <p class="empty-text">No location selected</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- App Scripts -->
+    <script src="/js/state.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/weather.js"></script>
+    <script src="/js/map.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

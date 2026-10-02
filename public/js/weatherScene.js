@@ -174,6 +174,10 @@ const WeatherScene = (function() {
         updateScene,
         setActiveLocation: (loc) => {
             activeSceneLocation = loc;
+            const toggle = document.getElementById('scene-toggle');
+            if (toggle) {
+                toggle.value = loc;
+            }
             updateScene();
         },
         getActiveLocation: () => activeSceneLocation

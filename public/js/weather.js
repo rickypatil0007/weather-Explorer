@@ -53,7 +53,7 @@ const WeatherController = {
             emit('userLocationLoaded', { lat, lon });
             
             // Update Scene
-            if (window.WeatherScene) window.WeatherScene.updateScene();
+            if (window.WeatherScene) window.WeatherScene.setActiveLocation('user');
             
         } catch (error) {
             console.error("User Location Error:", error);
@@ -106,7 +106,7 @@ const WeatherController = {
             emit('selectedLocationLoaded', { lat, lon, name: locName });
             
             // Update Scene
-            if (window.WeatherScene) window.WeatherScene.updateScene();
+            if (window.WeatherScene) window.WeatherScene.setActiveLocation('selected');
             
         } catch (error) {
             console.error("Selected Location Error:", error);

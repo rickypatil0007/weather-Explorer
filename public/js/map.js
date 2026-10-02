@@ -76,8 +76,14 @@ const MapController = {
         if (this.selectedMarker) {
             this.selectedMarker.setLatLng([lat, lon]).setPopupContent(name || "Selected Location");
         } else {
-            // Standard pin for selected
-            this.selectedMarker = L.marker([lat, lon]).addTo(this.map).bindPopup(name || "Selected Location");
+            // Standard pin for selected, make it draggable
+            this.selectedMarker = L.marker([lat, lon], { draggable: true }).addTo(this.map).bindPopup(name || "Selected Location");
+            
+            // Listen to dragend
+            this.selectedMarker.on('dragend', (e) => {
+                const pos = e.target.getLatLng();
+                WeatherController.fetchSelectedLocation(pos.lat, pos.lng, `${pos.lat.toFixed(2)}, ${pos.lng.toFixed(2)}`);
+            });
         }
         this.selectedMarker.openPopup();
     }

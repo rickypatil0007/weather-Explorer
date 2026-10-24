@@ -6,31 +6,52 @@ const WeatherController = {
         UI.setCardState('user', 'loading');
         
         try {
-            // First get coordinates via HTML5 Geolocation
-            const pos = await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-            });
-            
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
+            let lat, lon;
+            let locName = "My Location";
+            let locCountryCode = "";
+
+            // 1. Try HTML5 Geolocation (works on HTTPS or localhost)
+            try {
+                const pos = await new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        return reject(new Error("Geolocation not supported"));
+                    }
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 6000 });
+                });
+                lat = pos.coords.latitude;
+                lon = pos.coords.longitude;
+            } catch (geoErr) {
+                console.warn("Browser GPS unavailable/blocked (common on HTTP origins), falling back to IP Geolocation:", geoErr);
+                // 2. Fallback: Detect location via public IP
+                const ipRes = await fetch('https://ipwho.is/');
+                const ipData = await ipRes.json();
+                if (ipData && ipData.success && ipData.latitude && ipData.longitude) {
+                    lat = ipData.latitude;
+                    lon = ipData.longitude;
+                    locName = ipData.city || ipData.region || "My Location";
+                    locCountryCode = ipData.country_code || "";
+                } else {
+                    throw new Error("Unable to determine location from GPS or IP.");
+                }
+            }
             
             State.userLocation.latitude = lat;
             State.userLocation.longitude = lon;
             
-            // Reverse Geocode to get the real city name (Free API, no key required)
-            let locName = "My Location";
-            let locCountryCode = "";
-            try {
-                const geoRes = await fetch(`/api/location/reverse?latitude=${lat}&longitude=${lon}`);
-                if (geoRes.ok) {
-                    const geoData = await geoRes.json();
-                    if (geoData.name) {
-                        locName = geoData.name;
-                        locCountryCode = geoData.country_code || "";
+            // If location name wasn't provided by IP service, reverse geocode coordinates
+            if (locName === "My Location") {
+                try {
+                    const geoRes = await fetch(`/api/location/reverse?latitude=${lat}&longitude=${lon}`);
+                    if (geoRes.ok) {
+                        const geoData = await geoRes.json();
+                        if (geoData.name) {
+                            locName = geoData.name;
+                            locCountryCode = geoData.country_code || locCountryCode;
+                        }
                     }
+                } catch (e) {
+                    console.warn("Reverse geocoding failed", e);
                 }
-            } catch (e) {
-                console.warn("Reverse geocoding failed", e);
             }
             
             State.userLocation.name = locName;

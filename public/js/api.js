@@ -36,7 +36,7 @@ const API = {
         }
     },
 
-    LAMBDA_URL: 'https://gxjuyyxynw64kf2buhsxalg23a0ptwsa.lambda-url.ap-south-1.on.aws/',
+    LAMBDA_URL: '/api/cloud/history',
 
     async saveCloudSearch(city, temp) {
         try {

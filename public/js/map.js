@@ -21,20 +21,35 @@ const MapController = {
         
         this.map.attributionControl.setPrefix(false);
 
-        // Mapbox Streets tiles (Premium English map)
+        // Mapbox Streets tiles (with automatic OpenStreetMap fallback)
         fetch('/api/config')
             .then(res => res.json())
             .then(data => {
-                L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+                if (data.mapboxToken && data.mapboxToken.trim() !== '') {
+                    L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{z}/{x}/{y}?access_token={accessToken}', {
+                        maxZoom: 19,
+                        minZoom: 2,
+                        noWrap: true,
+                        bounds: bounds,
+                        attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+                        accessToken: data.mapboxToken
+                    }).addTo(this.map);
+                } else {
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        minZoom: 2,
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(this.map);
+                }
+            })
+            .catch(err => {
+                console.error('Failed to load map config, falling back to OSM', err);
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     minZoom: 2,
-                    noWrap: true,
-                    bounds: bounds,
-                    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-                    accessToken: data.mapboxToken
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(this.map);
-            })
-            .catch(err => console.error('Failed to load map config', err));
+            });
 
         // Map Click Event
         this.map.on('click', (e) => {

@@ -34,30 +34,5 @@ const API = {
             console.error(error);
             return null; // Return null if AQI fails so the main weather app doesn't crash
         }
-    },
-
-    LAMBDA_URL: '/api/cloud/history',
-
-    async saveCloudSearch(city, temp) {
-        try {
-            await fetch(this.LAMBDA_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ city, temp })
-            });
-        } catch (e) {
-            console.warn('DynamoDB cloud save error:', e);
-        }
-    },
-
-    async fetchCloudHistory() {
-        try {
-            const res = await fetch(this.LAMBDA_URL);
-            if (!res.ok) return [];
-            return await res.json();
-        } catch (e) {
-            console.warn('DynamoDB cloud fetch error:', e);
-            return [];
-        }
     }
 };

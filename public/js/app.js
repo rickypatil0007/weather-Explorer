@@ -65,49 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // We will wait for user interaction to avoid immediate prompts as per best practices,
     // or we can just trigger it. Let's trigger it.
     WeatherController.fetchUserLocation();
-
-    // Load AWS Serverless Cloud History from DynamoDB
-    loadAndRenderCloudHistory();
 });
-
-async function loadAndRenderCloudHistory() {
-    const container = document.getElementById('cloud-history-tags');
-    if (!container) return;
-
-    try {
-        const items = await API.fetchCloudHistory();
-        if (!items || items.length === 0) {
-            container.innerHTML = '<span class="cloud-loading-text">No cloud records yet. Search any city!</span>';
-            return;
-        }
-
-        // Sort by timestamp descending
-        const sorted = items
-            .filter(item => item && item.city)
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            .slice(0, 6);
-
-        container.innerHTML = sorted.map(item => `
-            <button class="cloud-chip" onclick="handleCloudChipClick('${item.city.replace(/'/g, "\\'")}')" title="Click to view ${item.city}">
-                <span>📍 ${item.city}</span>
-                <span class="cloud-chip-temp">${item.temp || ''}</span>
-            </button>
-        `).join('');
-    } catch (e) {
-        container.innerHTML = '<span class="cloud-loading-text">Cloud history offline</span>';
-    }
-}
-
-window.loadAndRenderCloudHistory = loadAndRenderCloudHistory;
-
-window.handleCloudChipClick = async function(cityName) {
-    const cleanCity = cityName.split('(')[0].trim();
-    const results = await API.searchLocations(cleanCity);
-    if (results && results.length > 0) {
-        const res = results[0];
-        handleLocationSelection(res, res.country || '');
-    }
-};
 
 function renderSearchResults(results) {
     const container = UI.elements.searchResults;

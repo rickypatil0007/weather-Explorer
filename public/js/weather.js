@@ -129,16 +129,6 @@ const WeatherController = {
             // Update Scene
             if (window.WeatherScene) window.WeatherScene.setActiveLocation('selected');
             
-            // Asynchronously save to DynamoDB via AWS Lambda
-            if (weatherData && weatherData.current) {
-                const tempStr = `${Math.round(weatherData.current.temperature)}°C`;
-                API.saveCloudSearch(locName, tempStr).then(() => {
-                    if (window.loadAndRenderCloudHistory) {
-                        window.loadAndRenderCloudHistory();
-                    }
-                });
-            }
-            
         } catch (error) {
             console.error("Selected Location Error:", error);
             State.selectedLocation.status = 'error';
